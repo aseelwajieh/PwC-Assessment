@@ -1,5 +1,5 @@
 import openai
-from dotenv import load_dotenv, dotenv_values
+from dotenv import load_dotenv
 from langchain.llms import OpenAI
 import os
 
@@ -27,7 +27,7 @@ def generate_questions(user_input, num_of_questions):
             messages=[
                 {
                     "role": "user",
-                    "content": f"Create {num_of_questions} MCQs with 4 choices about {user_input},without displaying the right answer",
+                    "content": f"Create {num_of_questions} MCQs with 4 choices about {user_input},without displaying the right answer,the choices must contain the right answer of thr quiz",
                 }
             ],
             model="gpt-3.5-turbo",
@@ -54,7 +54,7 @@ def evaluate_answers(questions, user_answers):
 
         correct_answer = get_correct_answer(lm_input)
 
-        user_answer = user_answers[i // 6].strip().lower()  # Access the correct user answer for the current question
+        user_answer = user_answers[i // 6].strip().lower()
 
         result_dict[i // 6] = {
             'Question': question,
@@ -70,50 +70,3 @@ def evaluate_answers(questions, user_answers):
     return result_dict
 
 
-# Example usage
-questions = "..."
-user_answers = ["...", "...", "...", "..."]  # Make sure this list matches the number of questions
-evaluation_result = evaluate_answers(questions, user_answers)
-print(evaluation_result)
-
-# def evaluate_answers(questions, user_answers):
-#     llm = OpenAI(temperature=0)
-#
-#     question_list = questions.strip().split("\n")
-#
-#     result_dict = {}
-#     j = 0
-#     score = 0
-#     correct_answers = []  # Create a new list for each question
-#
-#     for i in range(0, len(question_list), 6):
-#         question = question_list[i]
-#
-#         answers = question_list[i + 1:i + 5]
-#
-#         lm_input = (f"Which of these answers {answers} is the correct answer for that question {question},just give me "
-#                     f"the answer alone")
-#
-#         correct_answer = llm(lm_input).strip()
-#         print(f"correct answerrss {correct_answer}")
-#         correct_answers.append(correct_answer)
-#         print(f"lissttts {correct_answers}")
-#
-#         for user_answer in user_answers:
-#             if user_answer.strip().lower() == correct_answer.strip().lower():
-#                 score += 1
-#
-#         result_dict[j] = {
-#             'Question': question,
-#             'Your Answer': user_answers[j],  # Access the correct user answer for the current question
-#             'Correct Answer': correct_answer,
-#             'Rating': "You've selected the correct answer. Good job!!" if user_answers[
-#                                                                               j].strip() == correct_answer.strip() else "You've selected the wrong answer.",
-#             'Score': f"{score} / {len(correct_answers)}"
-#         }
-#         print(f"dict {result_dict}")
-#
-#         j += 1
-#
-#     print(f"dict {result_dict}")
-#     return result_dict
